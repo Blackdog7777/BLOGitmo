@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 style="text-align:center;">{% block title %}Ошибка 403{% endblock %}</h1>
+    <p style="text-align:center;">Страница не найдена</p>
+    <br>
+    <div style="text-align:center;">
+        <a href="{{ url_for('draw_main_page')}}">Начальная страница</a>
+    </div>
+{% endblock %}
