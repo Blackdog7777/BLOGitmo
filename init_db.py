@@ -9,13 +9,13 @@ def init_db():
 
     cur = connection.cursor()
 
-    cur.execute("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)",
-                ('Title1', 'Content1', 'System')
-                )
+    # cur.execute("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)",
+    #             ('Title1', 'Content1', 'System')
+    #             )
 
-    cur.execute("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)",
-                ('Text2', 'Content2', 'System')
-                )
+    # cur.execute("INSERT INTO posts (title, content, author) VALUES (?, ?, ?)",
+    #             ('Text2', 'Content2', 'System')
+    #             )
 
     connection.commit()
     connection.close()

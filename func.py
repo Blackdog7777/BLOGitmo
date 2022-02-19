@@ -9,7 +9,8 @@ def setup():
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = '1234'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///F://BLOGitmo//database.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C://Users//331704//PycharmProjects//BlogItmo//database.db'
 
     def get_db_connection():
         conn = sqlite3.connect('database.db')
@@ -42,10 +43,28 @@ def setup():
         conn.close()
         return render_template('index.html', posts=posts)
 
-    @app.route('/<int:post_id>')
+    @app.route('/<int:post_id>', methods=('GET', 'POST'))
     def post(post_id):
         get_value = get_post(post_id)
-        return render_template('post.html', post=get_value)
+        conn = get_db_connection()
+        comments = conn.execute(f'SELECT * FROM comments WHERE post = {get_value["id"]}').fetchall()
+        conn.close()
+        if request.method == 'POST':
+            name = request.form['name']
+            content = request.form['content']
+
+            if not name or not content:
+                flash('Заполните поля!')
+            else:
+                conn = get_db_connection()
+                conn.execute('INSERT INTO comments (post, name, content) VALUES (?, ?, ?)',
+                             (get_value['id'], name, content))
+                conn.commit()
+                conn.close()
+                return redirect(url_for(f'draw_main_page'))
+
+        return render_template('post.html', posts=[get_value, comments])
+
 
     @app.route('/about')
     def about():
@@ -111,8 +130,8 @@ def setup():
                 flash('Заполните поля!')
             else:
                 conn = get_db_connection()
-                conn.execute('INSERT INTO comments (name, content) VALUES (?, ?)',
-                             (name, content))
+                conn.execute('INSERT INTO comments (post, name, content) VALUES (?, ?, ?)',
+                             (0, name, content))
                 conn.commit()
                 conn.close()
                 return redirect(url_for('comment'))
@@ -129,6 +148,30 @@ def setup():
         conn.close()
         flash('"{}" был успешно лайкнут!'.format(get_value['title']))
         return redirect(url_for('draw_main_page'))
+
+    @app.route('/signup', methods=['POST', 'GET'])
+    def signup():
+        if request.method == 'POST':
+            name = request.form['name']
+            password = request.form['password']
+            email = request.form['email']
+
+
+            if not name or not password or not email:
+                flash('Заполните поля!')
+            else:
+                conn = get_db_connection()
+                names = conn.execute('SELECT name FROM users').fetchall()
+                for i in names:
+                    if i['name'] == name:
+                        flash('Такой пользователь уже существует')
+                        break
+                conn.execute('INSERT INTO users (name, password, email) VALUES (?, ?, ?)',
+                             (name, hash(password), email))
+                conn.commit()
+                conn.close()
+                return redirect(url_for('draw_main_page'))
+        return render_template('signup.html', posts=[])
 
     # Ошибки HTML
 

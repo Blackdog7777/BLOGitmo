@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '1234'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///F://BLOGitmo//database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C://Users//331704//PycharmProjects//BlogItmo//database.db'
 db = SQLAlchemy(app)
 
 
@@ -48,5 +48,6 @@ def update_post(title, content, id):
                        .where(Post.id == id)
                        .values(title=title, content=content))
     db.session.commit()
+
 
 add_post("123", "456", "123")
